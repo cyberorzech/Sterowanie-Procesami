@@ -17,10 +17,10 @@ Tk = 20;
 Kr = 0.6*Kk;
 Ti = 0.5*Tk;
 Td = 0.12*Tk;
-Ki = 1/Ti;
-Kd = Td;
+Ki = (Kr)*1/Ti;
+Kd = Kr*Td;
 
-t = 0:1:500;
+t = 0:1:70;
 
 % Hdem = tf([1], [1 3 1]);
 % Gdem = [1];
@@ -44,7 +44,6 @@ Gc = pid(Kr, Ki, Kd);
 %%                          Stworzenie ujemnej pętli sprzężenia zwrotnego
 
 Loop = feedback(Gc*H, [1]);
-step(Loop);
 
 %%                          Rysowanie odpowiedzi skokowych
 
@@ -57,29 +56,25 @@ step(Loop);
 
 %%              Wyznaczanie parametrów regulacji dla regulatora dyskretnego
 
-r2 = (Kk*Td)/Tp;
-r1 = -2.95677 %Kk*((Tp)/(2*Ti)-(2)*(Td/Tp)-1);
-r0 = 1.62867;
+r2 = (Kr*Td)/Tp;
+r1 = Kr*((Tp)/(2*Ti)-(2)*(Td/Tp)-1);
+r0 = Kr*(1+(Tp/(2*Ti)+(Td/Tp)));
 
-% r0 = Kk*(1 + Tp/(2*Ti) + Td/Tp);
-% r1 = Kk*(Tp/(2*Ti) - 2*Td/Tp - 1);
-% r2 = Kk*Td/Tp;
-
-% Równanie różnicowe: y(k) = b1(k-1) + b2(k-2) + a1(k-6) + a2(k-7)
+% Równanie różnicowe: y(k) = b1(k-1) + b2(k-2) + a1(k-11) + a2(k-12)
 b1 = -1.689;
 b2 = 0.7105;
-a1 = -0.0449;
-a2 = -0.04007;
+a1 = -0.05164;
+a2 = -0.04608;
 
-simend = 100;
-u(1:7) = 0;
-y(1:7) = 0;
-yzad(1:9) = 0;
-yzad(10:simend) = 1;
-e(1:7) = 0;
+simend = 35;
+u(1:12) = 0;
+y(1:12) = 0;
+yzad(1:14) = 0;
+yzad(15:simend) = 1;
+e(1:12) = 0;
 
-for k = 8:simend
-    y(k) = b1*y(k-1)+b2*y(k-2)+a1*u(k-6)+a2*u(k-7);
+for k = 13:simend
+    y(k) = b1*y(k-1)+b2*y(k-2)+a1*u(k-11)+a2*u(k-12);
     e(k) = yzad(k)-y(k);
     u(k) = r2*e(k-2)+r1*e(k-1)+r0*e(k)+u(k-1);
 end
