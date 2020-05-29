@@ -47,22 +47,19 @@ Loop = feedback(Gc*H, [1]);
 
 %%                          Rysowanie odpowiedzi skokowych
 
-% step(H, t);
-% hold on;
-% step(Loop, t);
-% legend('Odpowiedź skokowa obiektu', 'Odpowiedź skokowa układu');
-% hold off;
-% print('screeny/zad3zn.png','-dpng','-r400')
+step(H, t);
+hold on;
+step(Loop, t);
+legend('Odpowiedź skokowa obiektu', 'Odpowiedź skokowa układu');
+hold off;
+%print('screeny/pidciagly.png','-dpng','-r400')
 
 %%              Wyznaczanie parametrów regulacji dla regulatora dyskretnego
 
 r2 = (Kr*Td)/Tp;
 r1 = Kr*((Tp)/(2*Ti)-(2)*(Td/Tp)-1);
 r0 = Kr*(1+(Tp/(2*Ti)+(Td/Tp)));
-% 
-% r2 = (Kd*Td)/Tp;
-% r1 = ((Kr*Tp)/(2*Ti)-(2*Kd)*(Td/Tp)-Kr);
-% r0 = (Kr+((Tp*Kr)/(2*Ti)+((Td*Kd)/Tp)));
+
 
 % Równanie różnicowe: y(k) = b1u(k-11) + b0u(k-12) - a1y(k-1) - a0y(k-2)
 b1 = 0.05164;
@@ -70,12 +67,14 @@ b0 = 0.04608;
 a1 = -1.689;
 a0 = 0.7105;
 
-simend = 250;
+simend = 50;
 u(1:12) = 0;
 y(1:12) = 0;
 yzad(1:14) = 0;
 yzad(15:simend) = 1;
 e(1:12) = 0;
+
+%%                      Symulacja regulatora PID
 
 for k = 13:simend
     y(k) = -a1*y(k-1)-a0*y(k-2)+b1*u(k-11)+b0*u(k-12);
@@ -83,8 +82,12 @@ for k = 13:simend
     u(k) = r2*e(k-2)+r1*e(k-1)+r0*e(k)+u(k-1);
 end
 
+ %%                      Rysowanie wykresu funkcji
+
 stairs(y); 
 hold on;
-stairs(yzad, 'r--');
+stairs(yzad, 'r');
 xlabel('k');
 legend('Wyjście układu', 'Wyjście zadane', 'Location', 'northwest')
+hold off;
+%print('screeny/piddyskretny.png', '-dpng', '-r400')
